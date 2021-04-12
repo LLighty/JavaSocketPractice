@@ -14,6 +14,7 @@ def sniff_loopback_port_packets(port):
     interface = detect_loopback_interface()
     if interface == error_code_unknown_platform:
         print("Error finding OS aborting sniffing on loop back address")
+        return
     print("Sniffing local packets")
     sniff(filter=sniffer_filter, iface=interface, prn=analyse_packet)
 
