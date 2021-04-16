@@ -28,19 +28,25 @@ public class SecureClient extends Client implements Runnable{
             //Key store
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
             String password = "12345";
-            InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("../../resources/client/certificate-client.p12");
+            InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("resources/client/client-certificate.p12");
             keyStore.load(inputStream, password.toCharArray());
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509", "SunJSSE");
+            keyManagerFactory.init(keyStore, password.toCharArray());
 
-            //Trust store
+            //Trust Manager
             KeyStore trustStore = KeyStore.getInstance("PKCS12");
-            String password2 = "54321";
-            InputStream inputStream1 = ClassLoader.getSystemClassLoader().getResourceAsStream("../../resources/server/certificate-server.p12");
-            trustStore.load(inputStream1, password2.toCharArray());
+            InputStream inputStream1 = ClassLoader.getSystemClassLoader().getResourceAsStream("resources/server/server-certificate.p12");
+            trustStore.load(inputStream1, password.toCharArray());
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("PKIX", "SunJSSE");
+            trustManagerFactory.init(trustStore);
 
 
             // set up the SSL Context
+            //SSLContext sslContext = SSLContext.getInstance("TLS");
+            //sslContext.init(createKeyManager(keyStore, password2), createTrustManager(trustStore), null);
+
             SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(createKeyManager(keyStore, password), createTrustManager(trustStore, password2), null);
+            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
 
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
@@ -66,8 +72,9 @@ public class SecureClient extends Client implements Runnable{
         }
     }
 
+    /*
     private KeyManager[] createKeyManager(KeyStore keyStore, String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException {
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509", "SunJSSE");
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         keyManagerFactory.init(keyStore, password.toCharArray());
         X509KeyManager x509KeyManager = null;
         for (KeyManager keyManager : keyManagerFactory.getKeyManagers()) {
@@ -81,8 +88,8 @@ public class SecureClient extends Client implements Runnable{
         return new KeyManager[]{x509KeyManager};
     }
 
-    private TrustManager[] createTrustManager(KeyStore trustStore, String password) throws NoSuchProviderException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("PKIX", "SunJSSE");
+    private TrustManager[] createTrustManager(KeyStore trustStore) throws NoSuchProviderException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         trustManagerFactory.init(trustStore);
         X509TrustManager x509TrustManager = null;
         for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
@@ -95,7 +102,7 @@ public class SecureClient extends Client implements Runnable{
         if (x509TrustManager == null) throw new NullPointerException();
 
         return new TrustManager[]{x509TrustManager};
-    }
+    } */
 
     public void stopConnection() {
         try{
