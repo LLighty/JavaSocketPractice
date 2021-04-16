@@ -1,12 +1,13 @@
 package com.lighty.gui;
 
 import com.lighty.sockets.Client;
+import com.lighty.sockets.ClientUnsafe;
+import com.lighty.sockets.SecureClient;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 /**
  * Created by Liam on 6/04/2021.
@@ -14,7 +15,13 @@ import java.io.IOException;
 public class GUI {
     final String APPLICATIONNAME = "Simple Sockets";
 
-    int portNum = 5555;
+    //5555 - Insecure
+    //5554 - Secure
+    int portNum = 5554;
+
+    //0 - insecure
+    //1 - secure
+    int currentClient = 1;
 
     Client client;
     JFrame jFrame;
@@ -22,9 +29,22 @@ public class GUI {
     TextArea textArea;
     JTextField textField;
 
-    public GUI(){
-        client = new Client(this);
-        client.startConnection("127.0.0.1", portNum);
+    public GUI(String[] args){
+        if(args.length > 1){
+            currentClient = Integer.parseInt(args[0]);
+
+            if(currentClient > 1 || currentClient < 0){
+                currentClient = 0;
+            }
+        }
+
+        if(currentClient == 0){
+            client = new ClientUnsafe(this);
+            client.startConnection("127.0.0.1", portNum);
+        } else{
+            client = new SecureClient(this);
+            client.startConnection("127.0.0.1", portNum);
+        }
         jFrame = new JFrame();
 
         jFrame.setSize(750, 800);
@@ -71,7 +91,7 @@ public class GUI {
 
 
     public static void main(String[] args) {
-        GUI gui = new GUI();
+        GUI gui = new GUI(args);
     }
 
     public void appendToTextArea(String message){

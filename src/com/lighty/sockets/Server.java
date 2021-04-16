@@ -25,7 +25,7 @@ public class Server {
                 Socket newSocket = serverSocket.accept();
                 System.out.println("New client has joined");
 
-                ServerThread serverThread = new ServerThread(newSocket, this);
+                ServerThread serverThread = new ServerThreadUnsafe(newSocket, this);
 
                 synchronized (mutex) {
                     serverThreads.add(serverThread);
