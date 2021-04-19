@@ -10,7 +10,7 @@ payload = False
 loopback_sniff = False
 file_directory = os.getcwd() + "\PacketData"
 file_name = None
-port = 0
+port = 5555
 
 # used to troubleshoot
 verbose = False
@@ -51,7 +51,7 @@ def analyse_packet(pkt):
         else:
             file.write(packet)
         file.close()
-    #print(packet)
+    print(packet)
 
 
 def detect_loopback_interface():
@@ -66,11 +66,11 @@ def detect_loopback_interface():
 def parse_arguments():
     print("Parsing arguments")
     parser = argparse.ArgumentParser()
-    parser.add_argument("-pay", "--payload", help="Specify to examine only the payload of the packet")
+    parser.add_argument("-pay", "--payload", help="Specify to examine only the payload of the packet", action='store_true')
     parser.add_argument("-f", "--file", help="Output file name")
     parser.add_argument("port", help="Port to sniff data", type=int)
-    parser.add_argument("-l", "--local", help="Designate to sniff on loop back address usually 127.0.0.1")
-    parser.add_argument("-v", "--verbose", help="Console messages useful for debugging")
+    parser.add_argument("-l", "--local", help="Designate to sniff on loop back address usually 127.0.0.1", action='store_true')
+    parser.add_argument("-v", "--verbose", help="Console messages useful for debugging", action='store_true')
     args = parser.parse_args()
     global port
     port = args.port
