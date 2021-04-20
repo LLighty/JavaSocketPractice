@@ -17,11 +17,12 @@ public class GUI {
 
     //5555 - Insecure
     //5554 - Secure
-    int portNum = 5554;
+    final int INSECUREPORT = 5555;
+    final int SECUREPORT = 5554;
 
     //0 - insecure
     //1 - secure
-    int currentClient = 1;
+    int currentClient = -1;
 
     Client client;
     JFrame jFrame;
@@ -29,21 +30,30 @@ public class GUI {
     TextArea textArea;
     JTextField textField;
 
-    public GUI(String[] args){
-        if(args.length > 1){
-            currentClient = Integer.parseInt(args[0]);
+    public GUI(){
+        try {
+            int whichClient = Integer.parseInt(JOptionPane.showInputDialog("Enter 1 for insecure, 2 for secure"));
+            currentClient = whichClient - 1;
+        } catch (NumberFormatException e){
+            JFrame frame = new JFrame();
+            JOptionPane.showMessageDialog(frame,"We need a number either, 1 or 2.");
+            frame.dispose();
+            System.exit(0);
+        }
 
-            if(currentClient > 1 || currentClient < 0){
-                currentClient = 0;
-            }
+        if(currentClient > 1 || currentClient < 0){
+            JFrame frame = new JFrame();
+            JOptionPane.showMessageDialog(frame,"We need a number either, 1 or 2.");
+            frame.dispose();
+            System.exit(0);
         }
 
         if(currentClient == 0){
             client = new ClientUnsafe(this);
-            client.startConnection("127.0.0.1", portNum);
+            client.startConnection("127.0.0.1", INSECUREPORT);
         } else{
             client = new SecureClient(this);
-            client.startConnection("127.0.0.1", portNum);
+            client.startConnection("127.0.0.1", SECUREPORT);
         }
         jFrame = new JFrame();
 
@@ -91,7 +101,7 @@ public class GUI {
 
 
     public static void main(String[] args) {
-        GUI gui = new GUI(args);
+        GUI gui = new GUI();
     }
 
     public void appendToTextArea(String message){
